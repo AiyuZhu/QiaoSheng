@@ -102,7 +102,7 @@ DATA;
 #94=IFCGEOMETRICREPRESENTATIONSUBCONTEXT('Body','Model',*,*,*,*,#92,$,.MODEL_VIEW.,$);
 #95=IFCGEOMETRICREPRESENTATIONSUBCONTEXT('Box','Model',*,*,*,*,#92,$,.MODEL_VIEW.,$);
 #96=IFCGEOMETRICREPRESENTATIONSUBCONTEXT('FootPrint','Model',*,*,*,*,#92,$,.MODEL_VIEW.,$);
-#97=IFCPROJECT('2942qJFJLDbfWwykJWQne1',#20,'0001',$,$,'Project Name','Project Status',(#92),#89);
+#97=IFCPROJECT('2942qJFJLDbfWwykJWQne1',#20,'test_constr_env',$,$,'Project Name','Project Status',(#92),#89);
 #98=IFCPOSTALADDRESS($,$,$,$,('Enter address here'),$,'','Boston','','MA');
 #99=IFCBUILDING('2942qJFJLDbfWwykJWQne0',#20,'',$,$,#16,$,'',.ELEMENT.,$,$,#98);
 #100=IFCAXIS2PLACEMENT3D(#3,$,$);

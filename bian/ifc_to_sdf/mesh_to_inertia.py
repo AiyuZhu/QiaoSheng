@@ -27,10 +27,11 @@ def calculate_inertial_tag(file_name=None, mass=-1, pr=8, scale_factor=100):
     geom = ms.get_geometric_measures()
     volume = geom['mesh_volume']
     tensor = geom['inertia_tensor'] / pow(scale_factor, 2) * mass / volume
+    print(volume)
 
     intertial_xml = f'<inertial>\n  <origin xyz="{com[0]:.{pr}f} {com[1]:.{pr}f} {com[2]:.{pr}f}"/>\n  <mass value="{mass:.{pr}f}"/>\n  <inertia ixx="{tensor[0, 0]:.{pr}f}" ixy="{tensor[1, 0]:.{pr}f}" ixz="{tensor[2, 0]:.{pr}f}" iyy="{tensor[1, 1]:.{pr}f}" iyz="{tensor[1, 2]:.{pr}f}" izz="{tensor[2, 2]:.{pr}f}"/>\n</inertial>'
     print(intertial_xml)
 
 
 if __name__ == '__main__':
-    calculate_inertial_tag()  # TODO command line arguments
+    calculate_inertial_tag('C:\\Users\\Aiyu\\Desktop\\footing.dae', 0.0001)  # TODO command line arguments
