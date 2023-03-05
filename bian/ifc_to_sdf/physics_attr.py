@@ -33,6 +33,8 @@ def calculate_inertia(file_name, mass, scale_factor=100):
     ms = pymeshlab.MeshSet()
 
     ms.load_new_mesh(file_name)
+    geom = ms.get_geometric_measures()
+    co = geom['barycenter']
 
     # Scaling the mesh
     ms.compute_matrix_from_scaling_or_normalization(axisx=scale_factor, axisy=scale_factor, axisz=scale_factor)
@@ -46,7 +48,7 @@ def calculate_inertia(file_name, mass, scale_factor=100):
     tensor = geom['inertia_tensor'] / pow(scale_factor, 2) * mass / volume
 
     return \
-        mass, tensor[0, 0], tensor[1, 0], tensor[2, 0], tensor[1, 1], tensor[1, 2], tensor[2, 2]
+        mass, tensor[0, 0], tensor[1, 0], tensor[2, 0], tensor[1, 1], tensor[1, 2], tensor[2, 2], co[0], co[1], co[2]
 
 
 # Calculates rotation matrix to euler angles
@@ -70,4 +72,4 @@ def rotationMatrixToEulerAngles(R):
 
 
 if __name__ == '__main__':
-    print(calculate_inertia('C:\\Users\\Aiyu\\Desktop\\footing.dae', 0.0001, ))
+    print(calculate_inertia('C:\\Users\\31613\\Desktop\\bim_model\\models\\3SPfAWk9rByeCrma0uxQUo\\meshes\\3SPfAWk9rByeCrma0uxQUo.dae', 0.01))

@@ -58,11 +58,10 @@ class IfcToSdf(object):
 
     def create_models(self, static="False"):
         for _ in self.ifc_file.by_type("IfcBuildingElement"):
-            element_name = _.GlobalId
-            matrix = ifcopenshell.util.placement.get_local_placement(_.ObjectPlacement)
-            element_position = list(matrix[:, 3][:3]) + list(rotationMatrixToEulerAngles(matrix))
-            if _.is_a() != "IfcBuildingElementProxy" or "IfcCurtainWall":
-                print(_.is_a())
+            if _.is_a() != "IfcBuildingElementProxy":
+                element_name = _.GlobalId
+                matrix = ifcopenshell.util.placement.get_local_placement(_.ObjectPlacement)
+                element_position = list(matrix[:, 3][:3]) + list(rotationMatrixToEulerAngles(matrix))
                 self.elements_list.append([element_name, element_position])
                 element_folder_path = self.models_path + '\\{}'.format(element_name)
                 # create single element sdf format folder
@@ -88,6 +87,8 @@ class IfcToSdf(object):
                 for element in _model.by_type("IfcBuildingElement"):
                     if element.GlobalId != _.GlobalId:
                         _model.remove(element)
+                    elif element.GlobalId == _.GlobalId:
+                        element.ObjectPlacement.RelativePlacement.Location.Coordinates = (0., 0., 0.)
                 for product in _model.by_type("IfcProduct"):
                     if product.is_a() == "IfcGrid":
                         _model.remove(product)
@@ -95,17 +96,15 @@ class IfcToSdf(object):
 
                 # use ifcConvert to convert ifc to collada
                 collada_path = element_meshes + '\\{}.dae'.format(element_name)
-                convert_path = '{} {} {} {}'.format(self.ifc_converter_path, '--use-world-coords', element_path,
+                convert_path = '{} {} {} {}'.format(self.ifc_converter_path, '--building-local-placement', element_path,
                                                     collada_path)
-                os.popen(convert_path)
-                print(_.GlobalId)
-                time.sleep(0.5)
-                # p = subprocess.run(convert_path, shell=True)
-                # print(p)
-                # return_code = p.wait()
-                # print(return_code)
-                # if return_code == 0:
-                    # create model.config
+                # os.popen(convert_path)
+                # time.sleep(1)
+                return_code = 1
+                while return_code == 1:
+                    return_code = subprocess.Popen(convert_path, shell=False).wait()
+
+                # create model.config
                 model_config_path = element_folder_path + '\\model.config'
                 model_config = """<?xml version = "1.0"?>
                                 <model>
@@ -147,6 +146,7 @@ class IfcToSdf(object):
                                     <link name = '{2}'>
                                         <inertial>
                                           <mass>{3}</mass>
+                                          <pose>{11} {12} {13} 0 0 0</pose>
                                           <inertia>
                                             <ixx>{4}</ixx>
                                             <ixy>{5}</ixy>
@@ -175,8 +175,10 @@ class IfcToSdf(object):
                                     </link>
                                 </model>
                                 </sdf>
-                                """.format(element_name, static, _.is_a(), inertia[0], inertia[1], inertia[2], inertia[3],
-                                           inertia[4], inertia[5], inertia[6], model_meshes)
+                                """.format(element_name, static, _.is_a(), inertia[0], inertia[1], inertia[2],
+                                           inertia[3],
+                                           inertia[4], inertia[5], inertia[6], model_meshes, inertia[7], inertia[8],
+                                           inertia[9])
 
                 with open(model_sdf_path, 'w', encoding='utf-8') as f:
                     f.write(str(model_sdf))
@@ -208,7 +210,7 @@ class IfcToSdf(object):
                                     </include>
                                     """.format(in_element[0], in_element[1][0], in_element[1][1], in_element[1][2],
                                                in_element[1][3], in_element[1][4], in_element[1][5])
-                f.write(str(include_element[0]))
+                f.write(str(include_element))
         with open(world_path, 'a', encoding='utf-8') as f:
             f.write('\n')
             f.write(' </world>')
@@ -218,9 +220,9 @@ class IfcToSdf(object):
 
 if __name__ == "__main__":
     # BIM model's path
-    path_bim = '..\\..\\Case_for_RC\\BIM_model\\IFC_model\\unit_without_beam_in_room.ifc'
+    path_bim = '..\\..\\Case_for_RC\\BIM_model\\IFC_model\\unit_without_beam_in_b_room.ifc'
     # the path where you want to set the sdf folder
-    path_sdf = 'C:\\Users\\Aiyu\\Desktop'
+    path_sdf = 'C:\\Users\\31613\\Desktop'
     its = IfcToSdf(path_bim, 'bim_model', path_sdf)
     its.create_ros_launch()
     its.create_models()
