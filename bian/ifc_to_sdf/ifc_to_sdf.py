@@ -1,3 +1,4 @@
+import ifcopenshell
 import os
 import time
 import subprocess
@@ -192,12 +193,13 @@ class IfcToSdf(object):
                             ...
                             </physics>  
                             
-                            <light name='sun' type='directional'>
-                            <cast_shadows>1</cast_shadows>
-                            <pose>0 0 500 0 -0 0</pose>
-                            <diffuse>0.9528302 0.9528302 0.9528302 1</diffuse>
-                            <direction>0 0 -1</direction>
-                            </light>
+                            <include>
+                                <uri>model://sun</uri>
+                            </include>
+
+                            <include>
+                                <uri>model://plane</uri>
+                            </include>
                         """.format(self.project_name)
         with open(world_path, 'w', encoding='utf-8') as f:
             f.write(str(world_file))
@@ -206,10 +208,9 @@ class IfcToSdf(object):
                 include_element = """
                                     <include>
                                         <uri>model://{0}</uri>
-                                        <pose>{1} {2} {3} {4} {5} {6}</pose>
+                                        <pose>{1} {2} {3} 0 0 0</pose>
                                     </include>
-                                    """.format(in_element[0], in_element[1][0], in_element[1][1], in_element[1][2],
-                                               in_element[1][3], in_element[1][4], in_element[1][5])
+                                    """.format(in_element[0], in_element[1][0], in_element[1][1], in_element[1][2])
                 f.write(str(include_element))
         with open(world_path, 'a', encoding='utf-8') as f:
             f.write('\n')
