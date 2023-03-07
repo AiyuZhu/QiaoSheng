@@ -1,12 +1,10 @@
-import ifcopenshell
 import os
-import time
-import subprocess
 import ifcopenshell
 import ifcopenshell.util
 import ifcopenshell.util.element
 import ifcopenshell.util.placement
 from physics_attr import calculate_mass, calculate_inertia, rotationMatrixToEulerAngles, calculate_volume
+from ifc_processor import ifc_to_mesh, split_ifc
 
 
 class IfcToSdf(object):
@@ -59,7 +57,7 @@ class IfcToSdf(object):
 
     def create_models(self, static="False"):
         for _ in self.ifc_file.by_type("IfcBuildingElement"):
-            if _.is_a() != "IfcBuildingElementProxy":
+            if _.is_a() != "IfcBuildingElementProxy" and _.is_a() != "IfcSlab" and _.is_a() != "IfcRoof":
                 element_name = _.GlobalId
                 matrix = ifcopenshell.util.placement.get_local_placement(_.ObjectPlacement)
                 element_position = list(matrix[:, 3][:3]) + list(rotationMatrixToEulerAngles(matrix))
@@ -73,37 +71,14 @@ class IfcToSdf(object):
                 element_meshes = element_folder_path + '\\meshes'
                 if not os.path.exists(element_meshes):
                     os.mkdir(element_meshes)
-                    # create .ifc for single element
+
+                # create .ifc for single element
                 element_path = element_meshes + '\\{}.ifc'.format(element_name)
-                new_model = ifcopenshell.file()
-                for container in self.ifc_file.by_type("IfcRelContainedInSpatialStructure"):
-                    for ele in container[4]:
-                        if ele.id() == _.id():
-                            new_model.add(container)
-                for i in self.ifc_file.by_type("IfcRelAggregates"):
-                    new_model.add(i)
-                new_model.add(_)
-                new_model.write(element_path)
-                _model = ifcopenshell.open(element_path)
-                for element in _model.by_type("IfcBuildingElement"):
-                    if element.GlobalId != _.GlobalId:
-                        _model.remove(element)
-                    elif element.GlobalId == _.GlobalId:
-                        element.ObjectPlacement.RelativePlacement.Location.Coordinates = (0., 0., 0.)
-                for product in _model.by_type("IfcProduct"):
-                    if product.is_a() == "IfcGrid":
-                        _model.remove(product)
-                _model.write(element_path)
+                split_ifc(self.ifc_file, _, element_path)
 
                 # use ifcConvert to convert ifc to collada
                 collada_path = element_meshes + '\\{}.dae'.format(element_name)
-                convert_path = '{} {} {} {}'.format(self.ifc_converter_path, '--building-local-placement', element_path,
-                                                    collada_path)
-                # os.popen(convert_path)
-                # time.sleep(1)
-                return_code = 1
-                while return_code == 1:
-                    return_code = subprocess.Popen(convert_path, shell=False).wait()
+                ifc_to_mesh(self.ifc_converter_path, element_path, collada_path)
 
                 # create model.config
                 model_config_path = element_folder_path + '\\model.config'
@@ -221,10 +196,11 @@ class IfcToSdf(object):
 
 if __name__ == "__main__":
     # BIM model's path
-    path_bim = '..\\..\\Case_for_RC\\BIM_model\\IFC_model\\unit_without_beam_in_b_room.ifc'
+    # path_bim = '..\\..\\Case_for_RC\\BIM_model\\IFC_model\\unit_without_beam_in_b_room.ifc'
+    path_bim = 'C:\\Users\\Aiyu\\Desktop\\Barn_revit.ifc'
     # the path where you want to set the sdf folder
-    path_sdf = 'C:\\Users\\31613\\Desktop'
+    path_sdf = 'C:\\Users\\Aiyu\\Desktop'
     its = IfcToSdf(path_bim, 'bim_model', path_sdf)
     its.create_ros_launch()
-    its.create_models()
+    its.create_models('True')
     its.create_worlds()
