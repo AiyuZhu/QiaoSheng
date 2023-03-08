@@ -1,16 +1,44 @@
-# import os
-# import ifcopenshell
-# import ifcopenshell.util
-# import ifcopenshell.util.element
-# import ifcopenshell.util.placement
-# import materials
+import os
+import ifcopenshell
+import ifcopenshell.util
+import ifcopenshell.util.element
+import ifcopenshell.util.placement
+import materials
+import ifcopenshell.api.geometry.edit_object_placement as iep
+import math
+
 #
 # from physics_attr import rotationMatrixToEulerAngles
 #
 # # load model
-# model = ifcopenshell.open("..\\..\\Case_for_RC\\BIM_model\\IFC_model\\unit_without_beam_in_room.ifc")
-# project = model.by_type('IFCPROJECT')[0]
-# print(project)
+model = ifcopenshell.open("C:\\Users\\Aiyu\\Desktop\\Barn.ifc")
+print(model)
+beam = model.by_id('14Q2LABuj0ouJ970CxJHwC')
+print(beam)
+new_model = ifcopenshell.file()
+for i in model.traverse(beam):
+    new_model.add(i)
+for i in model.get_inverse(beam):
+    new_model.add(i)
+new_model.write("C:\\Users\\Aiyu\\Desktop\\beam_test.ifc")
+# beam.ObjectPlacement.RelativePlacement.Location.Coordinates = (0., 0., 0.)
+# # placement_matrix = ifcopenshell.util.placement.get_local_placement(beam.ObjectPlacement)
+# m = ifcopenshell.util.placement.get_local_placement(beam.ObjectPlacement)
+# print(m)
+# n = 0
+# while n < 3:
+#     placement_matrix[n][3] = 0
+#     n+=1
+# ifcopenshell.api.run("geometry.edit_object_placement", model, product=beam, matrix=placement_matrix, should_cascade=False)
+# m = ifcopenshell.util.placement.get_local_placement(beam.ObjectPlacement)
+# print(m)
+# model.write("C:\\Users\\Aiyu\\Desktop\\Barn_revit.ifc")
+
+# matrix = [[1, 0, 0, 0],
+#           [0, 1, 0, 0],
+#           [0, 0, 1, 0],
+#           [0, 0, 0, 1]]
+# iep.Usecase(beam).convert_matrix_to_si(matrix)
 # print(project.Name)
 # curtain_wall = model.by_type('IfcPlate')[0]
 # # if curtain_wall.is_a() != 'IfcBuildingElementProxy' and curtain_wall.is_a() != 'IfcCurtainWall':
@@ -35,7 +63,13 @@
 #         if ele.id() == footing.id():
 #             print(ele, 'gooooooo')
 #
-# footing = model.by_type("IfcFooting")[1]
+# footing = model.by_type("IfcColumn")[0]
+# footing.ObjectPlacement.RelativePlacement.Location.Coordinates = (0., 0., 0.)
+# new_model = ifcopenshell.file()
+# print(model.traverse(footing))
+# for i in model.traverse(footing):
+#     new_model.add(i)
+# new_model.write("C:\\Users\\Aiyu\\Desktop\\Roof.ifc")
 # print('footing placement',footing.ObjectPlacement)
 # # split ifc element
 # new_model = ifcopenshell.file()
@@ -64,12 +98,16 @@
 # print(list(matrix[:, 3][:3]) + list(rotationMatrixToEulerAngles(matrix)))
 #
 # # use ifcconvert to convert ifc to collada
-# # collada_path = element_meshes + '\\{}.dae'.format(element_name)
-# element_path = 'C:\\Users\\31613\\Desktop\\footing.ifc'  # should input by user
-# collada_path = 'C:\\Users\\31613\\Desktop\\footing.dae'  # should input by user
+# collada_path = element_meshes + '\\{}.dae'.format(element_name)
+
+
+# element_path = 'C:\\Users\\Aiyu\\Desktop\\1v_ZCRjlL9pudQA7oZBgU5.ifc'  # should input by user
+# collada_path = 'C:\\Users\\Aiyu\\Desktop\\1v_ZCRjlL9pudQA7oZBgU5.dae'  # should input by user
 # ifc_converter_path = '..\\ifc_to_sdf\\IfcConvert.exe'
 # convert_path = '{} {} {}'.format(ifc_converter_path, element_path, collada_path)
 # print("os", os.popen(convert_path))
+
+
 #
 # # Get all properties and quantities of the wall, including inherited type properties
 # psets = ifcopenshell.util.element.get_psets(footing)
@@ -100,6 +138,6 @@ import ifcopenshell.util.placement
 import ifcopenshell
 
 # Load the Barn Model and extract one of the "faulty" elements
-model = ifcopenshell.open('C:\\Users\\31613\\Desktop\\Barn.ifc')
-item = model.by_guid('0v68eVm656WgN4ZiDn3nVZ')
-print(item)
+# model = ifcopenshell.open('C:\\Users\\31613\\Desktop\\Barn.ifc')
+# item = model.by_guid('0v68eVm656WgN4ZiDn3nVZ')
+# print(item)

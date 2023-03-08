@@ -72,4 +72,4 @@ def rotationMatrixToEulerAngles(R):
 
 
 if __name__ == '__main__':
-    print(calculate_inertia('C:\\Users\\31613\\Desktop\\bim_model\\models\\3SPfAWk9rByeCrma0uxQUo\\meshes\\3SPfAWk9rByeCrma0uxQUo.dae', 0.01))
+    print(calculate_inertia('C:\\Users\\Aiyu\\Desktop\\1v_ZCRjlL9pudQA7oZBgU5.dae', 0.01))

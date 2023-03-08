@@ -57,7 +57,8 @@ class IfcToSdf(object):
 
     def create_models(self, static="False"):
         for _ in self.ifc_file.by_type("IfcBuildingElement"):
-            if _.is_a() != "IfcBuildingElementProxy" and _.is_a() != "IfcSlab" and _.is_a() != "IfcRoof":
+            # filter the IfcTyppe
+            if _.is_a() != "IfcRoof" and _.GlobalId != '26mbGI7IT5ruNk5ChRDbFB':
                 element_name = _.GlobalId
                 matrix = ifcopenshell.util.placement.get_local_placement(_.ObjectPlacement)
                 element_position = list(matrix[:, 3][:3]) + list(rotationMatrixToEulerAngles(matrix))
@@ -200,7 +201,7 @@ if __name__ == "__main__":
     path_bim = 'C:\\Users\\Aiyu\\Desktop\\Barn_revit.ifc'
     # the path where you want to set the sdf folder
     path_sdf = 'C:\\Users\\Aiyu\\Desktop'
-    its = IfcToSdf(path_bim, 'bim_model', path_sdf)
+    its = IfcToSdf(path_bim, 'Barn_model', path_sdf)
     its.create_ros_launch()
     its.create_models('True')
     its.create_worlds()

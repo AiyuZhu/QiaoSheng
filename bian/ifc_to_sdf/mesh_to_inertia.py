@@ -34,4 +34,4 @@ def calculate_inertial_tag(file_name=None, mass=-1, pr=8, scale_factor=100):
 
 
 if __name__ == '__main__':
-    calculate_inertial_tag('C:\\Users\\31613\\Desktop\\bim_model\\models\\3LhSTesrr2xxw9MQ7ULlxY\\meshes\\3LhSTesrr2xxw9MQ7ULlxY.dae', 0.01)  # TODO command line arguments
+    calculate_inertial_tag('C:\\Users\\Aiyu\\Desktop\\bim_model\\models\\14Q2LABuj0ouJ970CxJHwA\\meshes\\14Q2LABuj0ouJ970CxJHwA.dae', 0.01)  # TODO command line arguments
